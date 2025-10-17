@@ -2,6 +2,17 @@
 
 > **Academic Project**: Intelligent product recommendation system using hybrid algorithms and AI-generated explanations powered by OpenAI GPT-4o-mini.
 
+<div align="center">
+
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://unthinkable-nine.vercel.app/)
+[![Watch Demo](https://img.shields.io/badge/▶️_Watch_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/yp9Fi1m3Fuw)
+
+**🔗 Live Application**: [https://unthinkable-nine.vercel.app/](https://unthinkable-nine.vercel.app/)
+
+**📺 Video Demo**: [https://youtu.be/yp9Fi1m3Fuw](https://youtu.be/yp9Fi1m3Fuw)
+
+</div>
+
 ---
 
 ## 📋 Table of Contents
@@ -755,7 +766,38 @@ Route "/api/products/[id]" used `params.id`. `params` should be awaited.
 
 ---
 
-## 📊 Database Schema
+## � Deployment
+
+This project is **configured for Vercel deployment only**.
+
+### Quick Deployment Steps
+
+1. **Push to GitHub**
+   ```bash
+   git add .
+   git commit -m "Complete E-Commerce Product Recommender"
+   git push origin main
+   ```
+
+2. **Deploy to Vercel**
+   - Go to [vercel.com](https://vercel.com)
+   - Click "Add New Project"
+   - Import your GitHub repository
+   - Change Install Command to: `npm install --legacy-peer-deps`
+   - Add environment variables (DATABASE_URL, SESSION_SECRET, OPENAI_API_KEY)
+   - Click "Deploy"
+
+3. **Initialize Database**
+   ```bash
+   npx prisma db push
+   npx ts-node prisma/seed.ts
+   ```
+
+📘 **For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md)**
+
+---
+
+## �📊 Database Schema
 
 ### User
 - `id` - Unique identifier (cuid)

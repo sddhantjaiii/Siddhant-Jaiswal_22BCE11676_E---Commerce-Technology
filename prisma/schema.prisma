@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Model (Simple custom auth with email/password)
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  password        String    // Hashed password
+  name            String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  behaviors       UserBehavior[]
+  recommendations Recommendation[]
+
+  @@map("users")
+}
+
+// Product Model (Seeded from Fake Store API)
+model Product {
+  id          Int      @id @default(autoincrement())
+  title       String
+  price       Float
+  description String
+  category    String
+  image       String
+  ratingRate  Float    @map("rating_rate")
+  ratingCount Int      @map("rating_count")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  behaviors       UserBehavior[]
+  recommendations Recommendation[]
+
+  @@index([category])
+  @@map("products")
+}
+
+// User Behavior Tracking
+model UserBehavior {
+  id        Int      @id @default(autoincrement())
+  userId    String?  // Nullable for guest users
+  sessionId String   // Track guests via session
+  productId Int
+  action    ActionType
+  metadata  Json?    // Additional data (search query, time spent, etc.)
+  createdAt DateTime @default(now())
+  expiresAt DateTime // For 30-day guest data retention
+
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([productId])
+  @@index([action])
+  @@index([expiresAt]) // For cleanup job
+  @@map("user_behaviors")
+}
+
+enum ActionType {
+  VIEW
+  ADD_TO_CART
+  REMOVE_FROM_CART
+  PURCHASE
+  SEARCH
+  TIME_SPENT
+}
+
+// Recommendations (with LLM explanations)
+model Recommendation {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  productId   Int
+  score       Float    // Relevance score
+  explanation String?  // LLM-generated explanation
+  algorithm   String   // "trending", "rule-based", "collaborative"
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime // Cache expiry
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([productId])
+  @@index([expiresAt])
+  @@map("recommendations")
+}
+
+// Guest Session Tracking
+model GuestSession {
+  id        String   @id @default(cuid())
+  sessionId String   @unique
+  data      Json?    // Store cart, preferences, etc.
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([expiresAt])
+  @@map("guest_sessions")
+}
